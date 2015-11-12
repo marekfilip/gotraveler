@@ -2,10 +2,10 @@ package queue
 
 import (
 	//"fmt"
-	"gtktest/point"
+	"gotraveler/point"
 )
 
-type Queue []point.Point
+type Queue []*point.Point
 
 func (q *Queue) IsEmpty() bool {
 	if len(*q) > 0 {
@@ -22,15 +22,15 @@ func (q *Queue) Pop() *point.Point {
 	if len(*q) == 0 {
 		return nil
 	}
-	var x point.Point
+	var x *point.Point
 	x, *q = (*q)[len(*q)-1], (*q)[:len(*q)-1]
-	return &x
+	return x
 }
 
 /*
 Dokłada na koniec
 */
-func (q *Queue) Push(p point.Point) {
+func (q *Queue) Push(p *point.Point) {
 	*q = append(*q, p)
 }
 
@@ -41,15 +41,15 @@ func (q *Queue) Shift() *point.Point {
 	if len((*q)) == 0 {
 		return nil
 	}
-	var x point.Point
+	var x *point.Point
 	x, *q = (*q)[0], (*q)[1:]
 
-	return &x
+	return x
 }
 
 /*
 Dokłada na początek
 */
-func (q *Queue) Unshift(p point.Point) {
+func (q *Queue) Unshift(p *point.Point) {
 	*q = append(Queue{p}, (*q)...)
 }

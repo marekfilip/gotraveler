@@ -1,12 +1,14 @@
 package point
 
 type Point struct {
-	X   uint
-	Y   uint
-	Val uint
+	X       uint
+	Y       uint
+	Val     uint
+	Visited bool
+	Parent  *Point
 }
 
-func (p *Point) isFinish() bool {
+func (p *Point) IsFinish() bool {
 	if p.Val == 3 {
 		return true
 	}
@@ -14,7 +16,7 @@ func (p *Point) isFinish() bool {
 	return false
 }
 
-func (p *Point) isWall() bool {
+func (p *Point) IsWall() bool {
 	if p.Val == 1 {
 		return true
 	}
