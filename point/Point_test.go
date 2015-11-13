@@ -5,9 +5,9 @@ import (
 )
 
 func TestIsWall(t *testing.T) {
-	var r Point = Point{1, 1, 3, false, nil} //meta
-	var w Point = Point{1, 1, 1, false, nil} //ściana
-	var p Point = Point{1, 1, 0, false, nil} //droga
+	var r *Point = New(1, 1, 3) //meta
+	var w *Point = New(1, 1, 1) //ściana
+	var p *Point = New(1, 1, 0) //droga
 
 	if r.IsWall() == true {
 		t.Error("Point", p, " is not wall, expected false, recived true")
@@ -23,9 +23,9 @@ func TestIsWall(t *testing.T) {
 }
 
 func TestIsFinish(t *testing.T) {
-	var r Point = Point{1, 1, 3, false, nil} //meta
-	var w Point = Point{1, 1, 1, false, nil} //ściana
-	var p Point = Point{1, 1, 0, false, nil} //droga
+	var r *Point = New(1, 1, 3) //meta
+	var w *Point = New(1, 1, 1) //ściana
+	var p *Point = New(1, 1, 0) //droga
 
 	if r.IsFinish() == false {
 		t.Error("Point", p, " is finish, expected false, recived true")

@@ -21,8 +21,8 @@ func TestIsEmpty(t *testing.T) {
 
 func TestPop(t *testing.T) {
 	var q Queue = Queue{
-		&point.Point{1, 1, 1, false, nil},
-		&point.Point{2, 2, 2, false, nil},
+		point.New(1, 1, 1),
+		point.New(2, 2, 2),
 	}
 	var poped *point.Point
 
@@ -46,8 +46,8 @@ func TestPop(t *testing.T) {
 
 func TestShift(t *testing.T) {
 	var q Queue = Queue{
-		&point.Point{1, 1, 1, false, nil},
-		&point.Point{2, 2, 2, false, nil},
+		point.New(1, 1, 1),
+		point.New(2, 2, 2),
 	}
 	var shifted *point.Point
 
@@ -70,11 +70,11 @@ func TestShift(t *testing.T) {
 
 func TestPush(t *testing.T) {
 	var q Queue = Queue{
-		&point.Point{1, 1, 1, false, nil},
-		&point.Point{2, 2, 2, false, nil},
+		point.New(1, 1, 1),
+		point.New(2, 2, 2),
 	}
 
-	q.Push(&point.Point{3, 3, 3, false, nil})
+	q.Push(point.New(3, 3, 3))
 
 	if q[2].X != 3 || q[2].Y != 3 || q[2].Val != 3 {
 		t.Error("Point didnt pop:", q, "expected last point to be all 3")
@@ -83,11 +83,11 @@ func TestPush(t *testing.T) {
 
 func TestUnshift(t *testing.T) {
 	var q Queue = Queue{
-		&point.Point{1, 1, 1, false, nil},
-		&point.Point{2, 2, 2, false, nil},
+		point.New(1, 1, 1),
+		point.New(2, 2, 2),
 	}
 
-	q.Unshift(&point.Point{3, 3, 3, false, nil})
+	q.Unshift(point.New(3, 3, 3))
 
 	if q[0].X != 3 || q[0].Y != 3 || q[0].Val != 3 {
 		t.Error("Point didnt unshift:", q, "expected first point to be all 3")
