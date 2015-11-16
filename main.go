@@ -2,18 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/mattn/go-gtk/gdk"
-	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
+	"gotraveler/maze"
 	"gotraveler/point"
 	"gotraveler/queue"
+	"io/ioutil"
 	"os"
-	"strings"
 	"time"
-	"unsafe"
 )
 
-var maze [][]*point.Point
+var lab maze.Maze
+var startPoint *point.Point
+var table *gtk.Table
+var size int
 
 func init() {
 	/*
@@ -30,117 +31,117 @@ func init() {
 			9[0,0,0,0,0,0,0,0,3,1],
 		]
 	*/
-	maze = make([][]*point.Point, 10)
-	maze[0] = make([]*point.Point, 10)
-	maze[0][0] = point.New(0, 0, 2)
-	maze[0][1] = point.New(1, 0, 1)
-	maze[0][2] = point.New(2, 0, 0)
-	maze[0][3] = point.New(3, 0, 0)
-	maze[0][4] = point.New(4, 0, 0)
-	maze[0][5] = point.New(5, 0, 0)
-	maze[0][6] = point.New(6, 0, 0)
-	maze[0][7] = point.New(7, 0, 1)
-	maze[0][8] = point.New(8, 0, 1)
-	maze[0][9] = point.New(9, 0, 1)
-	maze[1] = make([]*point.Point, 10)
-	maze[1][0] = point.New(0, 1, 0)
-	maze[1][1] = point.New(1, 1, 0)
-	maze[1][2] = point.New(2, 1, 0)
-	maze[1][3] = point.New(3, 1, 1)
-	maze[1][4] = point.New(4, 1, 1)
-	maze[1][5] = point.New(5, 1, 1)
-	maze[1][6] = point.New(6, 1, 0)
-	maze[1][7] = point.New(7, 1, 0)
-	maze[1][8] = point.New(8, 1, 1)
-	maze[1][9] = point.New(9, 1, 1)
-	maze[2] = make([]*point.Point, 10)
-	maze[2][0] = point.New(0, 2, 1)
-	maze[2][1] = point.New(1, 2, 1)
-	maze[2][2] = point.New(2, 2, 0)
-	maze[2][3] = point.New(3, 2, 0)
-	maze[2][4] = point.New(4, 2, 0)
-	maze[2][5] = point.New(5, 2, 1)
-	maze[2][6] = point.New(6, 2, 1)
-	maze[2][7] = point.New(7, 2, 0)
-	maze[2][8] = point.New(8, 2, 0)
-	maze[2][9] = point.New(9, 2, 0)
-	maze[3] = make([]*point.Point, 10)
-	maze[3][0] = point.New(0, 3, 0)
-	maze[3][1] = point.New(1, 3, 0)
-	maze[3][2] = point.New(2, 3, 0)
-	maze[3][3] = point.New(3, 3, 1)
-	maze[3][4] = point.New(4, 3, 0)
-	maze[3][5] = point.New(5, 3, 0)
-	maze[3][6] = point.New(6, 3, 1)
-	maze[3][7] = point.New(7, 3, 1)
-	maze[3][8] = point.New(8, 3, 1)
-	maze[3][9] = point.New(9, 3, 1)
-	maze[4] = make([]*point.Point, 10)
-	maze[4][0] = point.New(0, 4, 1)
-	maze[4][1] = point.New(1, 4, 1)
-	maze[4][2] = point.New(2, 4, 1)
-	maze[4][3] = point.New(3, 4, 1)
-	maze[4][4] = point.New(4, 4, 1)
-	maze[4][5] = point.New(5, 4, 0)
-	maze[4][6] = point.New(6, 4, 0)
-	maze[4][7] = point.New(7, 4, 0)
-	maze[4][8] = point.New(8, 4, 0)
-	maze[4][9] = point.New(9, 4, 0)
-	maze[5] = make([]*point.Point, 10)
-	maze[5][0] = point.New(0, 5, 0)
-	maze[5][1] = point.New(1, 5, 0)
-	maze[5][2] = point.New(2, 5, 0)
-	maze[5][3] = point.New(3, 5, 1)
-	maze[5][4] = point.New(4, 5, 1)
-	maze[5][5] = point.New(5, 5, 1)
-	maze[5][6] = point.New(6, 5, 1)
-	maze[5][7] = point.New(7, 5, 1)
-	maze[5][8] = point.New(8, 5, 0)
-	maze[5][9] = point.New(9, 5, 1)
-	maze[6] = make([]*point.Point, 10)
-	maze[6][0] = point.New(0, 6, 0)
-	maze[6][1] = point.New(1, 6, 1)
-	maze[6][2] = point.New(2, 6, 0)
-	maze[6][3] = point.New(3, 6, 1)
-	maze[6][4] = point.New(4, 6, 0)
-	maze[6][5] = point.New(5, 6, 0)
-	maze[6][6] = point.New(6, 6, 0)
-	maze[6][7] = point.New(7, 6, 1)
-	maze[6][8] = point.New(8, 6, 0)
-	maze[6][9] = point.New(9, 6, 1)
-	maze[7] = make([]*point.Point, 10)
-	maze[7][0] = point.New(0, 7, 0)
-	maze[7][1] = point.New(1, 7, 1)
-	maze[7][2] = point.New(2, 7, 0)
-	maze[7][3] = point.New(3, 7, 0)
-	maze[7][4] = point.New(4, 7, 0)
-	maze[7][5] = point.New(5, 7, 1)
-	maze[7][6] = point.New(6, 7, 0)
-	maze[7][7] = point.New(7, 7, 0)
-	maze[7][8] = point.New(8, 7, 0)
-	maze[7][9] = point.New(9, 7, 1)
-	maze[8] = make([]*point.Point, 10)
-	maze[8][0] = point.New(0, 8, 0)
-	maze[8][1] = point.New(1, 8, 1)
-	maze[8][2] = point.New(2, 8, 1)
-	maze[8][3] = point.New(3, 8, 1)
-	maze[8][4] = point.New(4, 8, 1)
-	maze[8][5] = point.New(5, 8, 1)
-	maze[8][6] = point.New(6, 8, 1)
-	maze[8][7] = point.New(7, 8, 1)
-	maze[8][8] = point.New(8, 8, 1)
-	maze[8][9] = point.New(9, 8, 1)
-	maze[9] = make([]*point.Point, 10)
-	maze[9][0] = point.New(0, 9, 0)
-	maze[9][1] = point.New(1, 9, 0)
-	maze[9][2] = point.New(2, 9, 0)
-	maze[9][3] = point.New(3, 9, 0)
-	maze[9][4] = point.New(4, 9, 0)
-	maze[9][5] = point.New(5, 9, 0)
-	maze[9][6] = point.New(6, 9, 0)
-	maze[9][7] = point.New(7, 9, 0)
-	maze[9][8] = point.New(8, 9, 3)
-	maze[9][9] = point.New(9, 9, 1)
+	lab = make([][]*point.Point, 10)
+	lab[0] = make([]*point.Point, 10)
+	lab[0][0] = point.New(0, 0, 2)
+	lab[0][1] = point.New(1, 0, 1)
+	lab[0][2] = point.New(2, 0, 0)
+	lab[0][3] = point.New(3, 0, 0)
+	lab[0][4] = point.New(4, 0, 0)
+	lab[0][5] = point.New(5, 0, 0)
+	lab[0][6] = point.New(6, 0, 0)
+	lab[0][7] = point.New(7, 0, 1)
+	lab[0][8] = point.New(8, 0, 1)
+	lab[0][9] = point.New(9, 0, 1)
+	lab[1] = make([]*point.Point, 10)
+	lab[1][0] = point.New(0, 1, 0)
+	lab[1][1] = point.New(1, 1, 0)
+	lab[1][2] = point.New(2, 1, 0)
+	lab[1][3] = point.New(3, 1, 1)
+	lab[1][4] = point.New(4, 1, 1)
+	lab[1][5] = point.New(5, 1, 1)
+	lab[1][6] = point.New(6, 1, 0)
+	lab[1][7] = point.New(7, 1, 0)
+	lab[1][8] = point.New(8, 1, 1)
+	lab[1][9] = point.New(9, 1, 1)
+	lab[2] = make([]*point.Point, 10)
+	lab[2][0] = point.New(0, 2, 1)
+	lab[2][1] = point.New(1, 2, 1)
+	lab[2][2] = point.New(2, 2, 0)
+	lab[2][3] = point.New(3, 2, 0)
+	lab[2][4] = point.New(4, 2, 0)
+	lab[2][5] = point.New(5, 2, 1)
+	lab[2][6] = point.New(6, 2, 1)
+	lab[2][7] = point.New(7, 2, 0)
+	lab[2][8] = point.New(8, 2, 0)
+	lab[2][9] = point.New(9, 2, 0)
+	lab[3] = make([]*point.Point, 10)
+	lab[3][0] = point.New(0, 3, 0)
+	lab[3][1] = point.New(1, 3, 0)
+	lab[3][2] = point.New(2, 3, 0)
+	lab[3][3] = point.New(3, 3, 1)
+	lab[3][4] = point.New(4, 3, 0)
+	lab[3][5] = point.New(5, 3, 0)
+	lab[3][6] = point.New(6, 3, 1)
+	lab[3][7] = point.New(7, 3, 1)
+	lab[3][8] = point.New(8, 3, 1)
+	lab[3][9] = point.New(9, 3, 1)
+	lab[4] = make([]*point.Point, 10)
+	lab[4][0] = point.New(0, 4, 1)
+	lab[4][1] = point.New(1, 4, 1)
+	lab[4][2] = point.New(2, 4, 1)
+	lab[4][3] = point.New(3, 4, 1)
+	lab[4][4] = point.New(4, 4, 1)
+	lab[4][5] = point.New(5, 4, 0)
+	lab[4][6] = point.New(6, 4, 0)
+	lab[4][7] = point.New(7, 4, 0)
+	lab[4][8] = point.New(8, 4, 0)
+	lab[4][9] = point.New(9, 4, 0)
+	lab[5] = make([]*point.Point, 10)
+	lab[5][0] = point.New(0, 5, 0)
+	lab[5][1] = point.New(1, 5, 0)
+	lab[5][2] = point.New(2, 5, 0)
+	lab[5][3] = point.New(3, 5, 1)
+	lab[5][4] = point.New(4, 5, 1)
+	lab[5][5] = point.New(5, 5, 1)
+	lab[5][6] = point.New(6, 5, 1)
+	lab[5][7] = point.New(7, 5, 1)
+	lab[5][8] = point.New(8, 5, 0)
+	lab[5][9] = point.New(9, 5, 1)
+	lab[6] = make([]*point.Point, 10)
+	lab[6][0] = point.New(0, 6, 0)
+	lab[6][1] = point.New(1, 6, 1)
+	lab[6][2] = point.New(2, 6, 0)
+	lab[6][3] = point.New(3, 6, 1)
+	lab[6][4] = point.New(4, 6, 0)
+	lab[6][5] = point.New(5, 6, 0)
+	lab[6][6] = point.New(6, 6, 0)
+	lab[6][7] = point.New(7, 6, 1)
+	lab[6][8] = point.New(8, 6, 0)
+	lab[6][9] = point.New(9, 6, 1)
+	lab[7] = make([]*point.Point, 10)
+	lab[7][0] = point.New(0, 7, 0)
+	lab[7][1] = point.New(1, 7, 1)
+	lab[7][2] = point.New(2, 7, 0)
+	lab[7][3] = point.New(3, 7, 0)
+	lab[7][4] = point.New(4, 7, 0)
+	lab[7][5] = point.New(5, 7, 1)
+	lab[7][6] = point.New(6, 7, 0)
+	lab[7][7] = point.New(7, 7, 0)
+	lab[7][8] = point.New(8, 7, 0)
+	lab[7][9] = point.New(9, 7, 1)
+	lab[8] = make([]*point.Point, 10)
+	lab[8][0] = point.New(0, 8, 0)
+	lab[8][1] = point.New(1, 8, 1)
+	lab[8][2] = point.New(2, 8, 1)
+	lab[8][3] = point.New(3, 8, 1)
+	lab[8][4] = point.New(4, 8, 1)
+	lab[8][5] = point.New(5, 8, 1)
+	lab[8][6] = point.New(6, 8, 1)
+	lab[8][7] = point.New(7, 8, 1)
+	lab[8][8] = point.New(8, 8, 1)
+	lab[8][9] = point.New(9, 8, 1)
+	lab[9] = make([]*point.Point, 10)
+	lab[9][0] = point.New(0, 9, 0)
+	lab[9][1] = point.New(1, 9, 0)
+	lab[9][2] = point.New(2, 9, 0)
+	lab[9][3] = point.New(3, 9, 0)
+	lab[9][4] = point.New(4, 9, 0)
+	lab[9][5] = point.New(5, 9, 0)
+	lab[9][6] = point.New(6, 9, 0)
+	lab[9][7] = point.New(7, 9, 0)
+	lab[9][8] = point.New(8, 9, 3)
+	lab[9][9] = point.New(9, 9, 1)
 }
 
 func main() {
@@ -148,11 +149,11 @@ func main() {
 	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("GO Traveler")
 	window.Connect("destroy", gtk.MainQuit)
+	leftVBox := gtk.NewVBox(true, 0)
+	rightVBox := gtk.NewVBox(true, 0)
 
 	// Labirynt
-	size := len(maze)
-	var startPoint *point.Point
-	table, startPoint, err := generateTable(uint(size))
+	table, startPoint, size, err := lab.GenerateTable()
 	if err != nil {
 		panic(err)
 	}
@@ -162,53 +163,48 @@ func main() {
 		go findWay(table, startPoint, size)
 	})
 
-	// Dnd
-	targets := []gtk.TargetEntry{
-		{"text/uri-list", 0, 0},
-		{"STRING", 0, 1},
-		{"text/plain", 0, 2},
-	}
-	dest := gtk.NewLabel("D&D")
-	dest.DragDestSet(
-		gtk.DEST_DEFAULT_MOTION|
-			gtk.DEST_DEFAULT_HIGHLIGHT|
-			gtk.DEST_DEFAULT_DROP,
-		targets,
-		gdk.ACTION_COPY)
-	dest.DragDestAddUriTargets()
-	dest.Connect("drag-data-received", func(ctx *glib.CallbackContext) {
-		sdata := gtk.NewSelectionDataFromNative(unsafe.Pointer(ctx.Args(3)))
-		if sdata != nil {
-			a := (*[2000]uint8)(sdata.GetData())
-			files := strings.Split(string(a[0:sdata.GetLength()-1]), "\n")
-			fmt.Println(files)
-			if len(files) > 1 {
-				dialog := gtk.NewMessageDialog(
-					window,
-					gtk.DIALOG_MODAL,
-					gtk.MESSAGE_INFO,
-					gtk.BUTTONS_OK,
-					"Tylko 1 na raz")
-				dialog.SetTitle("D&D")
-				dialog.Response(func() {
-					dialog.Destroy()
-				})
-				dialog.Run()
-			} else {
+	// Ładowanie lab
+	dest := gtk.NewButtonWithLabel("Załaduj labirynt")
+	dest.Clicked(func() {
+		filechooserdialog := gtk.NewFileChooserDialog(
+			"Wybierz plik...",
+			dest.GetTopLevelAsWindow(),
+			gtk.FILE_CHOOSER_ACTION_OPEN,
+			gtk.STOCK_OK,
+			gtk.RESPONSE_ACCEPT)
+		filter := gtk.NewFileFilter()
+		filter.AddPattern("*.json")
+		filechooserdialog.AddFilter(filter)
+		filechooserdialog.Response(func() {
+			var templab maze.Maze
+			leftVBox.Remove(table)
 
+			dat, err := ioutil.ReadFile(filechooserdialog.GetFilename())
+			if err != nil {
+				panic(err)
 			}
-			/*for i := range files {
-				filename, _, _ := glib.FilenameFromUri(files[i])
-				files[i] = filename
-			}*/
-		}
+			err = templab.UnmarshalJSON(dat)
+			if err != nil {
+				panic(err)
+			}
+
+			table, startPoint, size, err = templab.GenerateTable()
+			if err != nil {
+				panic(err)
+			}
+			window.SetSizeRequest(size*50+100, size*50)
+			leftVBox.Add(table)
+			leftVBox.ShowAll()
+			lab = templab
+
+			filechooserdialog.Destroy()
+		})
+		filechooserdialog.Run()
 	})
 
-	leftVBox := gtk.NewVBox(true, 0)
 	leftVBox.SetBorderWidth(5)
 	leftVBox.Add(table)
 
-	rightVBox := gtk.NewVBox(true, 0)
 	rightVBox.SetBorderWidth(5)
 	rightVBox.Add(startButton)
 	rightVBox.Add(dest)
@@ -219,7 +215,7 @@ func main() {
 
 	window.Add(mainHBox)
 	window.SetResizable(false)
-	window.SetSizeRequest(size*50+100, size*50)
+	window.SetSizeRequest(size*50+120, size*50)
 	window.ShowAll()
 
 	gtk.Main()
@@ -242,21 +238,21 @@ func findWay(tab *gtk.Table, sp *point.Point, size int) {
 		} else {
 			currentPoint.Visited = true
 			// Szukamy punktów obok
-			if int(currentPoint.Y)-1 >= 0 && !maze[currentPoint.Y-1][currentPoint.X].IsWall() && !maze[currentPoint.Y-1][currentPoint.X].Visited {
-				maze[currentPoint.Y-1][currentPoint.X].Parent = currentPoint
-				que.Push(maze[currentPoint.Y-1][currentPoint.X]) // W dół
+			if int(currentPoint.Y)-1 >= 0 && !lab[currentPoint.Y-1][currentPoint.X].IsWall() && !lab[currentPoint.Y-1][currentPoint.X].Visited {
+				lab[currentPoint.Y-1][currentPoint.X].Parent = currentPoint
+				que.Push(lab[currentPoint.Y-1][currentPoint.X]) // W dół
 			}
-			if int(currentPoint.Y)+1 < size && !maze[currentPoint.Y+1][currentPoint.X].IsWall() && !maze[currentPoint.Y+1][currentPoint.X].Visited {
-				maze[currentPoint.Y+1][currentPoint.X].Parent = currentPoint
-				que.Push(maze[currentPoint.Y+1][currentPoint.X]) // W górę
+			if int(currentPoint.Y)+1 < size && !lab[currentPoint.Y+1][currentPoint.X].IsWall() && !lab[currentPoint.Y+1][currentPoint.X].Visited {
+				lab[currentPoint.Y+1][currentPoint.X].Parent = currentPoint
+				que.Push(lab[currentPoint.Y+1][currentPoint.X]) // W górę
 			}
-			if int(currentPoint.X)-1 >= 0 && !maze[currentPoint.Y][currentPoint.X-1].IsWall() && !maze[currentPoint.Y][currentPoint.X-1].Visited {
-				maze[currentPoint.Y][currentPoint.X-1].Parent = currentPoint
-				que.Push(maze[currentPoint.Y][currentPoint.X-1]) // W lewo
+			if int(currentPoint.X)-1 >= 0 && !lab[currentPoint.Y][currentPoint.X-1].IsWall() && !lab[currentPoint.Y][currentPoint.X-1].Visited {
+				lab[currentPoint.Y][currentPoint.X-1].Parent = currentPoint
+				que.Push(lab[currentPoint.Y][currentPoint.X-1]) // W lewo
 			}
-			if int(currentPoint.X)+1 < size && !maze[currentPoint.Y][currentPoint.X+1].IsWall() && !maze[currentPoint.Y][currentPoint.X+1].Visited {
-				maze[currentPoint.Y][currentPoint.X+1].Parent = currentPoint
-				que.Push(maze[currentPoint.Y][currentPoint.X+1]) // W prawo
+			if int(currentPoint.X)+1 < size && !lab[currentPoint.Y][currentPoint.X+1].IsWall() && !lab[currentPoint.Y][currentPoint.X+1].Visited {
+				lab[currentPoint.Y][currentPoint.X+1].Parent = currentPoint
+				que.Push(lab[currentPoint.Y][currentPoint.X+1]) // W prawo
 			}
 		}
 		go colorVisitedPoint(tab, currentPoint)
@@ -287,34 +283,4 @@ func colorVisitedPoint(tab *gtk.Table, p *point.Point) {
 	p.Img = gtk.NewImageFromFile("./images/reddot.png")
 	tab.Attach(p.Img, p.X, p.X+1, p.Y, p.Y+1, gtk.FILL, gtk.FILL, 0, 0)
 	p.Img.Show()
-}
-
-func generateTable(size uint) (*gtk.Table, *point.Point, error) {
-	var table *gtk.Table = gtk.NewTable(size, size, false)
-	var startPoint *point.Point
-	table.SetColSpacings(0)
-	table.SetRowSpacings(0)
-
-	if uint(len(maze)) != size || uint(len(maze[0])) != size {
-		return nil, nil, fmt.Errorf("Nieprawidłowy rozmiar tablicy!")
-	}
-
-	for y := uint(0); y < size; y++ {
-		for x := uint(0); x < size; x++ {
-			switch maze[y][x].Val {
-			case 1:
-				maze[y][x].Img = gtk.NewImageFromFile("./images/wall.png")
-				table.Attach(maze[y][x].Img, x, x+1, y, y+1, gtk.FILL, gtk.FILL, 0, 0)
-			case 2:
-				maze[y][x].Img = gtk.NewImageFromFile("./images/start.png")
-				startPoint = maze[y][x]
-				table.Attach(maze[y][x].Img, x, x+1, y, y+1, gtk.FILL, gtk.FILL, 0, 0)
-			case 3:
-				maze[y][x].Img = gtk.NewImageFromFile("./images/stop.png")
-				table.Attach(maze[y][x].Img, x, x+1, y, y+1, gtk.FILL, gtk.FILL, 0, 0)
-			}
-		}
-	}
-
-	return table, startPoint, nil
 }
