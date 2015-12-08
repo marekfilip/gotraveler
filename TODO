@@ -1,0 +1,16 @@
+* Przeszukiwanie labiryntu wszerz
+	* Dokończyć odczytywanie wartości
+* Naprawa crasha po zamknięciu okna wyboru labiryntu
+* Obsługa labiryntów prostokątnych
+* Stworzyć metody resetu
+	* Również przycisk do resetu
+* Generowanie labiryntów
+	Opis algorytmu
+	Algorytm jest dość prosty. Sposób wypełniania wolnej przestrzeni labiryntem przypomina nieco przeszukiwanie labiryntu wszerz.
+	Do pustej przestrzeni wpuszczamy "kreta", który drąży przejścia a jednocześnie może się klonować. Każdy kret drążąc korytarze/otwierając drzwi postępuje wg. prostych reguł:
+	Zasadniczo stara poruszać się przed siebie, z pewnym prawdopodobieństwem zmienia tor ruchu (w losowych momentach).
+	Kretowi nie wolno łaczyć korytarzy, tzn. nigdy nie drąży ściany, za którą znajduje się korytarz (nigdy nie otwiera drzwi, za którymi znajduje się już odwiedzona - przez niego lub innego kreta - komnata).
+	Jeśli kret nie może poruszać się w jakimś kierunku (np. jest to granica labiryntu, albo złamałby zasadę nie łączenia korytarzy), to stara się zmienić kierunek ruchu.
+	Kret nigdy nie zawraca (nie może iść w kierunku odwrotnym do tego, z którego przyszedł).
+	Jeśli kret nie może się ruszyć tak, by nie złamać żadnej z zasad to ... ginie. W ten sposób np. może powstać ślepy zaułek.
+	Z pewnym prawdopodobieństwem kret może się rozdwoić. Wtedy mamy dwa krety i każdy z nich pójdzie w innym kierunku (lub zginie...). Tak powstają rozgałęzienia. Wszystkie krety poruszają się równlegle, stąd podobieństwo do przeszukiwania labiryntu wszerz.
