@@ -1,7 +1,6 @@
 package queue
 
 import (
-	//"fmt"
 	"gotraveler/point"
 )
 

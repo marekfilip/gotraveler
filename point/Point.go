@@ -4,6 +4,13 @@ import (
 	"github.com/mattn/go-gtk/gtk"
 )
 
+const (
+	WAY    uint = 0
+	WALL   uint = 1
+	START  uint = 2
+	FINISH uint = 3
+)
+
 type Point struct {
 	X       uint
 	Y       uint
@@ -18,7 +25,7 @@ func New(x, y, val uint) *Point {
 }
 
 func (p *Point) IsFinish() bool {
-	if p.Val == 3 {
+	if p.Val == FINISH {
 		return true
 	}
 
@@ -26,7 +33,7 @@ func (p *Point) IsFinish() bool {
 }
 
 func (p *Point) IsStart() bool {
-	if p.Val == 2 {
+	if p.Val == START {
 		return true
 	}
 
@@ -34,9 +41,15 @@ func (p *Point) IsStart() bool {
 }
 
 func (p *Point) IsWall() bool {
-	if p.Val == 1 {
+	if p.Val == WALL {
 		return true
 	}
 
 	return false
+}
+
+func (p *Point) ColorVisitedPoint(tab *gtk.Table) {
+	p.Img = gtk.NewImageFromFile("./images/reddot.png")
+	tab.Attach(p.Img, p.X, p.X+1, p.Y, p.Y+1, gtk.FILL, gtk.FILL, 0, 0)
+	p.Img.Show()
 }
