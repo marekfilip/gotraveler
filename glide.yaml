@@ -1,0 +1,5 @@
+package: gotraveler
+import:
+- package: github.com/mattn/go-gtk
+  subpackages:
+  - gtk
